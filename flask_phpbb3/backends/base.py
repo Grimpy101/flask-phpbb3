@@ -1,13 +1,13 @@
-from __future__ import absolute_import
+import abc
+from typing import Any, Dict, Optional
 
-import typing
-
-import werkzeug.contrib.cache
-
-ACL_OPTIONS_CACHE_TTL = 3600 * 1
+import cachelib
 
 
-class BaseBackend(object):
+ACL_OPTIONS_CACHE_TTL: int = 3600 * 1
+
+
+class BaseBackend:
     KNOWN_OPERATIONS = (
         'fetch',
         'get',
@@ -20,11 +20,10 @@ class BaseBackend(object):
 
     def __init__(
         self,
-        cache,  # type: werkzeug.contrib.cache.BaseCache
-        config  # type: typing.Dict[str, str]
+        cache: cachelib.BaseCache,
+        config: Dict[str, Any]
     ):
-        # type: (...) -> None
-        self._functions = {}  # type: typing.Dict[str, str]
+        self._functions: Dict[str, str] = {}
         self._connection = None
         self._cache = cache
         self._config = config
@@ -35,47 +34,45 @@ class BaseBackend(object):
             custom_statements = {}
         self._functions.update(custom_statements)
 
-    def _setup_connection(self):
-        # type: () -> None
+    @abc.abstractmethod
+    def _setup_connection(self) -> None:
         raise NotImplementedError
 
-    def _prepare_statements(self):
-        # type: () -> None
+    @abc.abstractmethod
+    def _prepare_statements(self) -> None:
         raise NotImplementedError
 
     @property
-    def _db(self):
-        # type: () -> typing.Any
+    @abc.abstractmethod
+    def _db(self) -> Any:
         raise NotImplementedError
 
+    @abc.abstractmethod
     def execute(
         self,
-        command,  # type: str
-        cache=False,  # type: bool
-        cache_ttl=None,  # type: typing.Optional[int]
-        **kwargs  # type: typing.Any
-    ):
-        # type: (...) -> typing.Any
+        command: str,
+        cache: bool = False,
+        cache_ttl: Optional[int] = None,
+        **kwargs
+    ) -> Any:
         raise NotImplementedError
 
-    def close(self):
-        # type: () -> None
+    @abc.abstractmethod
+    def close(self) -> None:
         raise NotImplementedError
 
     @property
-    def is_closed(self):
-        # type: () -> bool
+    @abc.abstractmethod
+    def is_closed(self) -> bool:
         raise NotImplementedError
 
-    def get_user_acl(self, raw_user_permissions):
-        # type: (str) -> UserAcl
+    def get_user_acl(self, raw_user_permissions: str) -> UserAcl:
         raw_acl_options = self.execute(
             'fetch_acl_options',
             cache=True,
             cache_ttl=ACL_OPTIONS_CACHE_TTL,
             limit=None,
         )
-
         return UserAcl(raw_acl_options, raw_user_permissions)
 
 
