@@ -1,6 +1,6 @@
-import pkg_resources
+import importlib.metadata
 
-__version__ = pkg_resources.get_distribution(__name__).version
+__version__ = importlib.metadata.distribution(__name__).version
 
 from .extension import PhpBB3
 

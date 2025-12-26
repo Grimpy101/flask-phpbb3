@@ -1,11 +1,9 @@
-from __future__ import absolute_import
-
 import hashlib
 import unittest
 
 import flask_phpbb3.sessions
 
-import mock
+from unittest import mock
 
 
 class TestSession(unittest.TestCase):

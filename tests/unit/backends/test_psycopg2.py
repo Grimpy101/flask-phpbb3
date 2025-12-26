@@ -1,12 +1,10 @@
-from __future__ import absolute_import
-
 import unittest
 
 import flask_phpbb3.backends.psycopg2
 
-import mock
+from unittest import mock
 
-import werkzeug.contrib.cache
+import cachelib
 
 
 @mock.patch('flask_phpbb3.backends.psycopg2.Psycopg2Backend._db')
@@ -14,7 +12,7 @@ class TestExecuteOperation(unittest.TestCase):
     def setUp(self):
         # type: () -> None
         self.connection = flask_phpbb3.backends.psycopg2.Psycopg2Backend(
-            werkzeug.contrib.cache.SimpleCache(),
+            cachelib.SimpleCache(),
             {
                 'TABLE_PREFIX': '',
             }
@@ -112,7 +110,7 @@ class TestExecuteOperation(unittest.TestCase):
 class TestPreparedCustomFieldsStatements(unittest.TestCase):
     def test_empty(self, mocked_db):
         connection = flask_phpbb3.backends.psycopg2.Psycopg2Backend(
-            werkzeug.contrib.cache.SimpleCache(),
+            cachelib.SimpleCache(),
             {
                 'TABLE_PREFIX': '',
                 'CUSTOM_USER_FIELDS': [],
@@ -135,7 +133,7 @@ class TestPreparedCustomFieldsStatements(unittest.TestCase):
 
     def test_valid(self, mocked_db):
         connection = flask_phpbb3.backends.psycopg2.Psycopg2Backend(
-            werkzeug.contrib.cache.SimpleCache(),
+            cachelib.SimpleCache(),
             {
                 'TABLE_PREFIX': '',
                 'CUSTOM_USER_FIELDS': ['some_field', 'another_field'],
@@ -163,7 +161,7 @@ class TestPreparedCustomFieldsStatements(unittest.TestCase):
 class TestPreparedCustomStatements(unittest.TestCase):
     def test_empty(self, mocked_db):
         connection = flask_phpbb3.backends.psycopg2.Psycopg2Backend(
-            werkzeug.contrib.cache.SimpleCache(),
+            cachelib.SimpleCache(),
             {
                 'TABLE_PREFIX': '',
                 'CUSTOM_STATEMENTS': {},
@@ -186,7 +184,7 @@ class TestPreparedCustomStatements(unittest.TestCase):
 
     def test_addition(self, mocked_db):
         connection = flask_phpbb3.backends.psycopg2.Psycopg2Backend(
-            werkzeug.contrib.cache.SimpleCache(),
+            cachelib.SimpleCache(),
             {
                 'TABLE_PREFIX': '',
                 'CUSTOM_STATEMENTS': {
@@ -216,7 +214,7 @@ class TestPreparedCustomStatements(unittest.TestCase):
 
     def test_override(self, mocked_db):
         connection = flask_phpbb3.backends.psycopg2.Psycopg2Backend(
-            werkzeug.contrib.cache.SimpleCache(),
+            cachelib.SimpleCache(),
             {
                 'TABLE_PREFIX': '',
                 'CUSTOM_STATEMENTS': {

@@ -1,10 +1,8 @@
-from __future__ import absolute_import
-
 import unittest
 
 import flask_phpbb3.backends.base
 
-import mock
+from unittest import mock
 
 
 class TestSessionHasPrivilege(unittest.TestCase):
