@@ -8,12 +8,12 @@ python:
   - "3.6"
 install:
   - |
-    if [[ $TRAVIS_PYTHON_VERSION = 2.7 ]]; then
+    if [[ $TRAVIS_PYTHON_VERSION = 3.14 ]]; then
       pip install -r requirements/dev.txt
     else
       pip install -r requirements/dev-3.txt
     fi
 script:
-  - if [[ $TRAVIS_PYTHON_VERSION = 2.7 ]]; then flake8; fi
-  - if [[ $TRAVIS_PYTHON_VERSION != 2.7 ]]; then mypy flask_phpbb3; fi
-  - if [[ $TRAVIS_PYTHON_VERSION = 2.7 ]]; then python setup.py test; fi
+  - if [[ $TRAVIS_PYTHON_VERSION = 3.14 ]]; then flake8; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != 3.14 ]]; then mypy flask_phpbb3; fi
+  - if [[ $TRAVIS_PYTHON_VERSION = 3.14 ]]; then python setup.py test; fi
