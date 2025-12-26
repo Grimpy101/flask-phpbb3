@@ -106,6 +106,11 @@ class PhpBB3:
             flask.g.get('phpbb3_backend', None)
 
         if backend is None or backend.is_closed:
+            if not hasattr(current_app, 'phpbb3_cache'):
+                raise ValueError(
+                    'App not properly configured, phpbb3_cache is missing!'
+                )
+
             cache = getattr(current_app, 'phpbb3_cache')
             backend = PhpBB3._create_backend(
                 current_app.config['PHPBB3']['DRIVER'],
