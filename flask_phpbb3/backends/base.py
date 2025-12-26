@@ -1,5 +1,5 @@
 import abc
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import cachelib
 
@@ -77,22 +77,23 @@ class BaseBackend:
 
 
 class UserAcl(object):
-    def __init__(self, raw_acl_options, raw_user_permissions):
-        # type: (typing.List[dict], str) -> None
+    def __init__(self, raw_acl_options: List[Dict], raw_user_permissions: str):
         self._acl_options = self._parse_acl_options(raw_acl_options)
         self._acl = self._parse_user_permissions(raw_user_permissions)
-        self._acl_lookup_cache = {}  # type: dict
+        self._acl_lookup_cache: Dict[str, Any] = {}
 
     @classmethod
-    def _parse_acl_options(cls, raw_acl_options):
-        # type: (typing.List[dict]) -> dict
+    def _parse_acl_options(
+        cls,
+        raw_acl_options: List[Dict[str, Any]]
+    ) -> Dict[str, Dict[str, int]]:
         # Load ACL options, so we can decode the user ACL
-        acl_options = {
+        acl_options: Dict[str, Dict[str, int]] = {
             'local': {},
             'global': {}
-        }  # type: dict
-        local_index = 0
-        global_index = 0
+        }
+        local_index: int = 0
+        global_index: int = 0
 
         for opt in raw_acl_options or []:
             if opt['is_local'] == 1:
@@ -109,10 +110,12 @@ class UserAcl(object):
         return acl_options
 
     @classmethod
-    def _parse_user_permissions(cls, raw_user_permissions):
-        # type: (str) -> dict
-        seq_cache = {}  # type: dict
-        acl = {}
+    def _parse_user_permissions(
+        cls,
+        raw_user_permissions: str
+    ) -> Dict[str, str]:
+        seq_cache: Dict[str, str] = {}
+        acl: Dict[str, str] = {}
 
         split_user_permissions = raw_user_permissions\
             .rstrip()\
@@ -136,8 +139,7 @@ class UserAcl(object):
 
         return acl
 
-    def has_privilege(self, privilege, forum_id=0):
-        # type: (str, int) -> bool
+    def has_privilege(self, privilege: str, forum_id: int = 0) -> bool:
         # Parse negation
         str_forum_id = str(forum_id)
 
@@ -172,13 +174,12 @@ class UserAcl(object):
             except IndexError:
                 pass
 
-        output = (
+        output: bool = (
             negated ^ self._acl_lookup_cache[str_forum_id][option]
-        )  # type: bool
+        )
         return output
 
-    def has_privileges(self, *privileges, **kwargs):
-        # type: (*str, **int) -> bool
+    def has_privileges(self, *privileges: str, **kwargs: int) -> bool:
         forum_id = kwargs.get('forum_id', 0)
 
         output = False
