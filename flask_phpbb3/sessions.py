@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, Optional, Set
+from typing import Any, Dict, Mapping, MutableMapping, Optional, Set
 
 import cachelib
 
@@ -14,6 +14,7 @@ import flask_phpbb3.backends.base
 ANONYMOUS_CACHE_TTL: int = 3600 * 24
 
 
+# TODO: Inheriting Dict causes a type-checker error, possibly restructure
 class PhpBB3Session(Dict[str, Any], flask.sessions.SessionMixin):
     def __init__(self) -> None:
         # Some session related variables
