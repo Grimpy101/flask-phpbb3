@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 import json
-import typing
+from typing import Any, Dict, List, Optional
 
 try:
     import psycopg2
@@ -15,8 +15,7 @@ from . import base
 
 
 class Psycopg2Backend(base.BaseBackend):
-    def _setup_connection(self):
-        # type: () -> None
+    def _setup_connection(self) -> None:
         self._connection = psycopg2.connect(
             'dbname={DATABASE}'
             ' host={HOST}'
@@ -26,15 +25,13 @@ class Psycopg2Backend(base.BaseBackend):
         )
 
     @property
-    def _db(self):
-        # type: () -> psycopg2.extensions.connection
+    def _db(self) -> psycopg2.extensions.connection:
         if not self._connection:
             self._setup_connection()
 
         return self._connection
 
-    def _prepare_statements(self):
-        # type: () -> None
+    def _prepare_statements(self) -> None:
         """
         Initializes prepared SQL statements, depending on version of PHPBB3
         """
@@ -106,13 +103,12 @@ class Psycopg2Backend(base.BaseBackend):
 
         # TODO Add/Move to version specific queries
 
-    def _prepare_custom_fields_statements(self):
-        # type: () -> None
+    def _prepare_custom_fields_statements(self) -> None:
         """
         Prepares statements for custom fields
         """
         # Setters for custom fields
-        custom_fields = self._config.get('CUSTOM_USER_FIELDS', [])
+        custom_fields: List[Any] = self._config.get('CUSTOM_USER_FIELDS', [])
         for custom_field in custom_fields:
             self._functions["set_{0}".format(custom_field)] = (
                 "UPDATE"
@@ -128,15 +124,14 @@ class Psycopg2Backend(base.BaseBackend):
 
     def _sql_query(
         self,
-        operation,  # type: str
-        query,  # type: str
-        cache_key_prefix=None,  # type: typing.Optional[str]
-        cache_ttl=None,  # type: typing.Optional[int]
-        skip=0,  # type: int
-        limit=10,  # type: typing.Optional[int]
-        **kwargs  # type: typing.Union[int, str]
-    ):
-        # type: (...) -> typing.Any
+        operation: str,
+        query: str,
+        cache_key_prefix: Optional[str] = None,
+        cache_ttl: Optional[int] = None,
+        skip: int = 0,
+        limit: Optional[int] = 10,
+        **kwargs: int | str
+    ) -> Any:
         """Executes a query with values in kwargs."""
         if operation not in self.KNOWN_OPERATIONS:
             raise ValueError("Unknown operation")
@@ -149,7 +144,7 @@ class Psycopg2Backend(base.BaseBackend):
                                    for key, value in kwargs.items())
             )
             raw_data = self._cache.get(cache_key)
-            if raw_data and isinstance(raw_data, (str, unicode)):
+            if raw_data and isinstance(raw_data, (str, bytes)):
                 try:
                     return json.loads(raw_data)
                 except ValueError:
@@ -172,8 +167,12 @@ class Psycopg2Backend(base.BaseBackend):
 
         return output
 
-    def _paginate_query(self, query, skip, limit):
-        # type: (str, int, typing.Optional[int]) -> str
+    def _paginate_query(
+        self,
+        query: str,
+        skip: int,
+        limit: Optional[int]
+    ) -> str:
         output = query + ' OFFSET {:d}'.format(skip)
         if limit:
             output += ' LIMIT {:d}'.format(limit)
@@ -181,11 +180,10 @@ class Psycopg2Backend(base.BaseBackend):
 
     def _execute_operation(
         self,
-        operation,  # type: str
-        query,  # type: str
-        params  # type: typing.Dict[str, typing.Union[str, int]]
-    ):
-        # type: (...) -> typing.Any
+        operation: str,
+        query: str,
+        params: Dict[str, str | int]
+    ) -> Any:
         cursor = self._db.cursor()
 
         cursor.execute(
@@ -213,15 +211,14 @@ class Psycopg2Backend(base.BaseBackend):
 
     def execute(
         self,
-        command,  # type: str
-        cache=False,  # type: bool
-        cache_ttl=None,  # type: typing.Optional[int]
-        skip=0,  # type: int
-        limit=10,  # type: typing.Optional[int]
-        **kwargs  # type: typing.Union[int, str]
-    ):
-        # type: (...) -> typing.Any
-        cache_key_prefix = None
+        command: str,
+        cache: bool = False,
+        cache_ttl: Optional[int] = None,
+        skip: int = 0,
+        limit: Optional[int] = 10,
+        **kwargs: int | str
+    ) -> Any:
+        cache_key_prefix: Optional[str] = None
         if cache:
             cache_key_prefix = command
 
@@ -246,11 +243,9 @@ class Psycopg2Backend(base.BaseBackend):
                 **kwargs
             )
 
-    def close(self):
-        # type: () -> None
+    def close(self) -> None:
         self._db.close()
 
     @property
-    def is_closed(self):
-        # type: () -> bool
+    def is_closed(self) -> bool:
         return bool(self._db.closed)
