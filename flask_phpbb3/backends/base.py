@@ -53,7 +53,9 @@ class BaseBackend:
         command: str,
         cache: bool = False,
         cache_ttl: Optional[int] = None,
-        **kwargs
+        skip: int = 0,
+        limit: Optional[int] = 10,
+        **kwargs: int | str
     ) -> Any:
         raise NotImplementedError
 
