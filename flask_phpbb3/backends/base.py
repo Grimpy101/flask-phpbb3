@@ -76,7 +76,7 @@ class BaseBackend:
         return UserAcl(raw_acl_options, raw_user_permissions)
 
 
-class UserAcl(object):
+class UserAcl:
     def __init__(self, raw_acl_options: List[Dict], raw_user_permissions: str):
         self._acl_options = self._parse_acl_options(raw_acl_options)
         self._acl = self._parse_user_permissions(raw_user_permissions)
