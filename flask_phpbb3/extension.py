@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import typing
 
 import flask
@@ -7,7 +5,7 @@ import flask
 import flask_phpbb3.backends.base
 import flask_phpbb3.sessions
 
-import werkzeug.contrib.cache
+import cachelib
 
 
 class PhpBB3(object):

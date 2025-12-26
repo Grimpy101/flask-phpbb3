@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 import json
 import typing
 
@@ -10,7 +8,7 @@ import flask.wrappers
 import flask_phpbb3
 import flask_phpbb3.backends.base
 
-import werkzeug.contrib.cache
+import cachelib
 
 ANONYMOUS_CACHE_TTL = 3600 * 24
 
