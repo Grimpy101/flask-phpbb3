@@ -1,16 +1,14 @@
 import unittest
-
-import flask_phpbb3.backends.psycopg2
-
 from unittest import mock
 
 import cachelib
 
+import flask_phpbb3.backends.psycopg2
+
 
 @mock.patch('flask_phpbb3.backends.psycopg2.Psycopg2Backend._db')
 class TestExecuteOperation(unittest.TestCase):
-    def setUp(self):
-        # type: () -> None
+    def setUp(self) -> None:
         self.connection = flask_phpbb3.backends.psycopg2.Psycopg2Backend(
             cachelib.SimpleCache(),
             {
@@ -18,8 +16,7 @@ class TestExecuteOperation(unittest.TestCase):
             }
         )
 
-    def test_get_query(self, mocked_db):
-        # type: (mock.Mock) -> None
+    def test_get_query(self, mocked_db: mock.Mock) -> None:
         parameters = mock.Mock()
         cursor = mock.Mock()
         cursor.fetchone.return_value = {'key': 'value'}
@@ -37,8 +34,7 @@ class TestExecuteOperation(unittest.TestCase):
             parameters
         )
 
-    def test_has_query_negative(self, mocked_db):
-        # type: (mock.Mock) -> None
+    def test_has_query_negative(self, mocked_db: mock.Mock) -> None:
         cursor = mock.Mock()
         cursor.fetchone.return_value = 0
         mocked_db.cursor.return_value = cursor
@@ -51,8 +47,7 @@ class TestExecuteOperation(unittest.TestCase):
 
         self.assertFalse(actual_value)
 
-    def test_has_query_positive(self, mocked_db):
-        # type: (mock.Mock) -> None
+    def test_has_query_positive(self, mocked_db: mock.Mock) -> None:
         cursor = mock.Mock()
         cursor.fetchone.return_value = 1
         mocked_db.cursor.return_value = cursor
@@ -65,8 +60,7 @@ class TestExecuteOperation(unittest.TestCase):
 
         self.assertTrue(actual_value)
 
-    def test_fetch_query(self, mocked_db):
-        # type: (mock.Mock) -> None
+    def test_fetch_query(self, mocked_db: mock.Mock) -> None:
         expected_value = [{'key': 1}, {'key': 2}]
         cursor = mock.Mock()
         cursor.__iter__ = mock.Mock(return_value=iter(expected_value))
@@ -80,8 +74,7 @@ class TestExecuteOperation(unittest.TestCase):
 
         self.assertEqual(actual_value, expected_value)
 
-    def test_set_query(self, mocked_db):
-        # type: (mock.Mock) -> None
+    def test_set_query(self, mocked_db: mock.Mock) -> None:
         cursor = mock.Mock()
         mocked_db.cursor.return_value = cursor
 
@@ -94,8 +87,7 @@ class TestExecuteOperation(unittest.TestCase):
         self.assertEqual(actual_value, cursor.statusmessage)
         mocked_db.commit.assert_called_once_with()
 
-    def test_unknown_query(self, mocked_db):
-        # type: (mock.Mock) -> None
+    def test_unknown_query(self, mocked_db: mock.Mock) -> None:
         actual_value = self.connection._execute_operation(
             'unknown_op',
             'select * from somewhere',
@@ -108,7 +100,7 @@ class TestExecuteOperation(unittest.TestCase):
 
 @mock.patch('flask_phpbb3.backends.psycopg2.Psycopg2Backend._db')
 class TestPreparedCustomFieldsStatements(unittest.TestCase):
-    def test_empty(self, mocked_db):
+    def test_empty(self, mocked_db: mock.Mock) -> None:
         connection = flask_phpbb3.backends.psycopg2.Psycopg2Backend(
             cachelib.SimpleCache(),
             {
@@ -131,7 +123,7 @@ class TestPreparedCustomFieldsStatements(unittest.TestCase):
             ])
         )
 
-    def test_valid(self, mocked_db):
+    def test_valid(self, mocked_db: mock.Mock) -> None:
         connection = flask_phpbb3.backends.psycopg2.Psycopg2Backend(
             cachelib.SimpleCache(),
             {
@@ -159,7 +151,7 @@ class TestPreparedCustomFieldsStatements(unittest.TestCase):
 
 @mock.patch('flask_phpbb3.backends.psycopg2.Psycopg2Backend._db')
 class TestPreparedCustomStatements(unittest.TestCase):
-    def test_empty(self, mocked_db):
+    def test_empty(self, mocked_db: mock.Mock) -> None:
         connection = flask_phpbb3.backends.psycopg2.Psycopg2Backend(
             cachelib.SimpleCache(),
             {
@@ -182,7 +174,7 @@ class TestPreparedCustomStatements(unittest.TestCase):
             ])
         )
 
-    def test_addition(self, mocked_db):
+    def test_addition(self, mocked_db: mock.Mock) -> None:
         connection = flask_phpbb3.backends.psycopg2.Psycopg2Backend(
             cachelib.SimpleCache(),
             {
@@ -212,7 +204,7 @@ class TestPreparedCustomStatements(unittest.TestCase):
             'some query',
         )
 
-    def test_override(self, mocked_db):
+    def test_override(self, mocked_db: mock.Mock) -> None:
         connection = flask_phpbb3.backends.psycopg2.Psycopg2Backend(
             cachelib.SimpleCache(),
             {

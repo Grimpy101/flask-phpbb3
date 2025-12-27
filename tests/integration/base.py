@@ -1,4 +1,3 @@
-import typing
 import unittest
 
 import flask
@@ -16,21 +15,18 @@ DB_NAME = 'phpbb3_test'
 
 
 def setUpModule() -> None:
-    # type: () -> None
     _create_db()
     connection = _get_connection(DB_HOST, DB_USER, DB_NAME)
     _init_schema(connection)
     connection.commit()
 
 
-def tearDownModule():
-    # type: () -> None
+def tearDownModule() -> None:
     _destory_db()
 
 
 class TestWithDatabase(unittest.TestCase):
-    def setUp(self):
-        # type: () -> None
+    def setUp(self) -> None:
         self.app = flask.Flask('test_app')
         self.app.config.update({
             'PHPBB3': {
@@ -50,30 +46,26 @@ class TestWithDatabase(unittest.TestCase):
 
         # From these lines devil is born
         @self.app.route('/')
-        def index():
-            # type: () -> typing.Any
+        def index() -> str:
             return flask.render_template_string(
                 '{{ session.user_id}},{{ session.username }}'
             )
 
         @self.app.route('/data')
-        def data():
-            # type: () -> typing.Any
+        def data() -> str:
             return flask.render_template_string(
                 '{{ session.custom_var}}'
             )
 
         @self.app.route('/data/<package>')
-        def set_data(package):
-            # type: (str) -> typing.Any
+        def set_data(package: str) -> str:
             flask.session['custom_var'] = package
             return flask.render_template_string(
                 'Done :o'
             )
 
         @self.app.route('/priv_test')
-        def test_privileges():
-            # type: () -> typing.Any
+        def test_privileges() -> str:
             return flask.render_template_string(
                 "{{ session.has_privilege('m_edit') }},"
                 "{{ session.has_privilege('m_delete') }},"
@@ -84,23 +76,21 @@ class TestWithDatabase(unittest.TestCase):
         self.ctx.push()
 
         # Init connection
-        self.connection = self.phpbb3._backend._db
-        self.cursor = self.connection.cursor()\
-            # type: psycopg2.extensions.cursor
+        self.connection: psycopg2.extensions.connection =\
+            self.phpbb3._backend._db
+        self.cursor: psycopg2.extensions.cursor = self.connection.cursor()
 
         # Setup client
         self.client = self.app.test_client()
 
-    def tearDown(self):
-        # type: () -> None
+    def tearDown(self) -> None:
         self.connection.rollback()
         self.cursor.close()
 
         self.ctx.pop()
 
 
-def _create_user(cursor):
-    # type: (psycopg2.extensions.cursor) -> None
+def _create_user(cursor: psycopg2.extensions.cursor) -> None:
     cursor.execute(
         "insert into"
         " phpbb_users (user_id, username, username_clean)"
@@ -108,8 +98,11 @@ def _create_user(cursor):
     )
 
 
-def _create_session(cursor, session_id, user_id):
-    # type: (psycopg2.extensions.cursor, str, int) -> None
+def _create_session(
+    cursor: psycopg2.extensions.cursor,
+    session_id: str,
+    user_id: int
+) -> None:
     cursor.execute(
         "insert into"
         " phpbb_sessions (session_id, session_user_id)"
@@ -120,8 +113,11 @@ def _create_session(cursor, session_id, user_id):
     )
 
 
-def _create_privilege(cursor, privilege_id, privilege):
-    # type: (psycopg2.extensions.cursor, int, str) -> None
+def _create_privilege(
+    cursor: psycopg2.extensions.cursor,
+    privilege_id: int,
+    privilege: str
+) -> None:
     cursor.execute(
         "insert into"
         " phpbb_acl_options (auth_option_id, auth_option, is_global)"
@@ -132,8 +128,10 @@ def _create_privilege(cursor, privilege_id, privilege):
     )
 
 
-def _grant_privilege(cursor, user_id):
-    # type: (psycopg2.extensions.cursor, int) -> None
+def _grant_privilege(
+    cursor: psycopg2.extensions.cursor,
+    user_id: int
+) -> None:
     # Cryptic value to  allow only m_edit permission
     permission_set = 'HRA0HS'
     cursor.execute(
@@ -147,12 +145,11 @@ def _grant_privilege(cursor, user_id):
     )
 
 
-def _create_db():
-    # type: () -> None
+def _create_db() -> None:
     connection = _get_connection(DB_HOST, DB_ROOT_USER, DB_ROOT_USER)
     connection.set_isolation_level(0)
 
-    cursor = connection.cursor()  # type: psycopg2.extensions.cursor
+    cursor = connection.cursor()
     cursor.execute('create user {user}'.format(user=DB_USER))
     cursor.execute('create database {db_name} owner {user};'.format(
             user=DB_USER,
@@ -163,21 +160,19 @@ def _create_db():
     connection.close()
 
 
-def _init_schema(connection):
-    # type: (psycopg2.extensions.connection) -> None
+def _init_schema(connection: psycopg2.extensions.connection) -> None:
     with open('./tests/fixtures/postgres/schema.sql', 'r') as f:
         schema_sql = f.read()
-    cursor_schema = connection.cursor()  # type: psycopg2.extensions.cursor
+    cursor_schema = connection.cursor()
     cursor_schema.execute(schema_sql)
     cursor_schema.close()
 
 
-def _destory_db():
-    # type: () -> None
+def _destory_db() -> None:
     connection = _get_connection(DB_HOST, DB_ROOT_USER, DB_ROOT_USER)
     connection.set_isolation_level(0)
 
-    cursor = connection.cursor()  # type: psycopg2.extensions.cursor
+    cursor = connection.cursor()
     cursor.execute('drop database {db_name};'.format(
             db_name=DB_NAME,
         )
@@ -187,8 +182,11 @@ def _destory_db():
     connection.close()
 
 
-def _get_connection(host, user, database):
-    # type: (str, str, str) -> psycopg2.extensions.connection
+def _get_connection(
+    host: str,
+    user: str,
+    database: str
+) -> psycopg2.extensions.connection:
     connection_string = (
         'dbname={db_name}'
         ' user={user}'

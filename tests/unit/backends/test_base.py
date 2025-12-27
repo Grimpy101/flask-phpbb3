@@ -1,13 +1,11 @@
 import unittest
+from unittest import mock
 
 import flask_phpbb3.backends.base
 
-from unittest import mock
-
 
 class TestSessionHasPrivilege(unittest.TestCase):
-    def setUp(self):
-        # type: () -> None
+    def setUp(self) -> None:
         user_acl = {
             '0': ['0'] * 31,
             '5': ['0'] * 31,
@@ -37,8 +35,7 @@ class TestSessionHasPrivilege(unittest.TestCase):
             '5': ''.join(user_acl['5']),
         }
 
-    def test_existing(self):
-        # type: () -> None
+    def test_existing(self) -> None:
         actual_result = self.user_acl.has_privilege(
             'm_edit',
         )
@@ -49,8 +46,7 @@ class TestSessionHasPrivilege(unittest.TestCase):
         )
         self.assertFalse(actual_result)
 
-    def test_global(self):
-        # type: () -> None
+    def test_global(self) -> None:
         # m_review is not global, and is false (even tho on global the index
         # is set to true)
         actual_result = self.user_acl.has_privilege(
@@ -65,8 +61,7 @@ class TestSessionHasPrivilege(unittest.TestCase):
             )
         self.assertTrue(actual_result)
 
-    def test_local(self):
-        # type: () -> None
+    def test_local(self) -> None:
         # Now, this is True since we are on local level
         actual_result = self.user_acl.has_privilege(
             'm_review',
@@ -93,8 +88,7 @@ class TestSessionHasPrivilege(unittest.TestCase):
         )
         self.assertFalse(actual_result)
 
-    def test_negated(self):
-        # type: () -> None
+    def test_negated(self) -> None:
         actual_result = self.user_acl.has_privilege(
             '!m_review',
             forum_id=5
@@ -117,8 +111,7 @@ class TestSessionHasPrivilege(unittest.TestCase):
         )
         self.assertFalse(actual_result)
 
-    def test_out_of_bound(self):
-        # type: () -> None
+    def test_out_of_bound(self) -> None:
         actual_result = self.user_acl.has_privilege(
             'm_strange'
         )
@@ -130,8 +123,7 @@ class TestSessionHasPrivilege(unittest.TestCase):
         )
         self.assertFalse(actual_result)
 
-    def test_unknown(self):
-        # type: () -> None
+    def test_unknown(self) -> None:
         actual_result = self.user_acl.has_privilege(
             'm_unknown'
         )
@@ -151,16 +143,14 @@ class TestSessionHasPrivilege(unittest.TestCase):
 
 
 class TestSessionHasPrivileges(unittest.TestCase):
-    def setUp(self):
-        # type: () -> None
+    def setUp(self) -> None:
         self.user_acl = flask_phpbb3.backends.base.UserAcl(
             raw_acl_options=[],
             raw_user_permissions='',
         )
 
     @mock.patch('flask_phpbb3.backends.base.UserAcl.has_privilege')
-    def test_combinations(self, has_privilege_mock):
-        # type: (mock.Mock) -> None
+    def test_combinations(self, has_privilege_mock: mock.Mock) -> None:
         privileges = ('m_edit', 'm_delete', 'm_view')
         has_privilege_mock.return_value = False
 
@@ -181,8 +171,7 @@ class TestSessionHasPrivileges(unittest.TestCase):
 
     @mock.patch('flask_phpbb3.backends.base.UserAcl.has_privilege',
                 return_value=False)
-    def test_per_forum(self, has_privilege_mock):
-        # type: (mock.Mock) -> None
+    def test_per_forum(self, has_privilege_mock: mock.Mock) -> None:
         privileges = ('m_edit', 'm_delete', 'm_view')
 
         self.user_acl.has_privileges(*privileges)
