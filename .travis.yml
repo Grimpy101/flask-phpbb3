@@ -4,15 +4,10 @@ services:
 addons:
   postgresql: "9.2"
 python:
-  - "2.7"
-  - "3.6"
+  - "3.14"
 install:
   - |
-    if [[ $TRAVIS_PYTHON_VERSION = 3.14 ]]; then
-      pip install -r requirements/dev.txt
-    else
-      pip install -r requirements/dev-3.txt
-    fi
+    pip install -r requirements/dev-3.txt
 script:
   - if [[ $TRAVIS_PYTHON_VERSION = 3.14 ]]; then flake8; fi
   - if [[ $TRAVIS_PYTHON_VERSION != 3.14 ]]; then mypy flask_phpbb3; fi

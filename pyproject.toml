@@ -1,0 +1,26 @@
+[project]
+name = "Flask-phpBB3"
+version = "0.3.0"
+authors = [
+    { name="Gregor Kališnik", email="gregor@kalisnik.si" }
+]
+description = "Connector for Flask with phpBB3 board"
+readme = "README.rst"
+requires-python = ">=3.14"
+classifiers = [
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+
+[project.urls]
+Homepage = "https://github.com/MasterMind2k/flask-phpbb3"
+Issues = "https://github.com/Podnapisi-NET/flask-phpbb3/issues"
+
