@@ -1,81 +1,10 @@
 import abc
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import cachelib
 
 
 ACL_OPTIONS_CACHE_TTL: int = 3600 * 1
-
-
-class BaseBackend:
-    KNOWN_OPERATIONS = (
-        'fetch',
-        'get',
-        'has',
-        'set',
-    )
-    KNOWN_DRIVERS = (
-        'psycopg2',
-    )
-
-    def __init__(
-        self,
-        cache: cachelib.BaseCache,
-        config: Dict[str, Any]
-    ):
-        self._functions: Dict[str, str] = {}
-        self._connection = None
-        self._cache = cache
-        self._config = config
-
-        self._prepare_statements()
-        custom_statements = self._config.get('CUSTOM_STATEMENTS', {})
-        if not isinstance(custom_statements, dict):
-            custom_statements = {}
-        self._functions.update(custom_statements)
-
-    @abc.abstractmethod
-    def _setup_connection(self) -> None:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def _prepare_statements(self) -> None:
-        raise NotImplementedError
-
-    @property
-    @abc.abstractmethod
-    def _db(self) -> Any:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def execute(
-        self,
-        command: str,
-        cache: bool = False,
-        cache_ttl: Optional[int] = None,
-        skip: int = 0,
-        limit: Optional[int] = 10,
-        **kwargs: int | str
-    ) -> Any:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def close(self) -> None:
-        raise NotImplementedError
-
-    @property
-    @abc.abstractmethod
-    def is_closed(self) -> bool:
-        raise NotImplementedError
-
-    def get_user_acl(self, raw_user_permissions: str) -> UserAcl:
-        raw_acl_options = self.execute(
-            'fetch_acl_options',
-            cache=True,
-            cache_ttl=ACL_OPTIONS_CACHE_TTL,
-            limit=None,
-        )
-        return UserAcl(raw_acl_options, raw_user_permissions)
 
 
 class UserAcl:
@@ -188,3 +117,74 @@ class UserAcl:
         for option in privileges:
             output |= self.has_privilege(option, forum_id=forum_id)
         return output
+
+
+class BaseBackend:
+    KNOWN_OPERATIONS = (
+        'fetch',
+        'get',
+        'has',
+        'set',
+    )
+    KNOWN_DRIVERS = (
+        'psycopg2',
+    )
+
+    def __init__(
+        self,
+        cache: cachelib.BaseCache,
+        config: Dict[str, Any]
+    ):
+        self._functions: Dict[str, str] = {}
+        self._connection = None
+        self._cache = cache
+        self._config = config
+
+        self._prepare_statements()
+        custom_statements = self._config.get('CUSTOM_STATEMENTS', {})
+        if not isinstance(custom_statements, dict):
+            custom_statements = {}
+        self._functions.update(custom_statements)
+
+    @abc.abstractmethod
+    def _setup_connection(self) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def _prepare_statements(self) -> None:
+        raise NotImplementedError
+
+    @property
+    @abc.abstractmethod
+    def _db(self) -> Any:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def execute(
+        self,
+        command: str,
+        cache: bool = False,
+        cache_ttl: Optional[int] = None,
+        skip: int = 0,
+        limit: Optional[int] = 10,
+        **kwargs: Union[int, str]
+    ) -> Any:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def close(self) -> None:
+        raise NotImplementedError
+
+    @property
+    @abc.abstractmethod
+    def is_closed(self) -> bool:
+        raise NotImplementedError
+
+    def get_user_acl(self, raw_user_permissions: str) -> UserAcl:
+        raw_acl_options = self.execute(
+            'fetch_acl_options',
+            cache=True,
+            cache_ttl=ACL_OPTIONS_CACHE_TTL,
+            limit=None,
+        )
+        return UserAcl(raw_acl_options, raw_user_permissions)
