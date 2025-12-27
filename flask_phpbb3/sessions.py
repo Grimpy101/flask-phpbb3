@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, Mapping, MutableMapping, Optional, Set
+from typing import Any, Dict, Optional, Set
 
 import cachelib
 
@@ -103,7 +103,8 @@ class PhpBB3Session(Dict[str, Any], flask.sessions.SessionMixin):
             return ''
 
         import hashlib
-        return hashlib.sha1(self['user_form_salt'] + link).hexdigest()[:8]
+        prepared_link: str = self['user_form_salt'] + link
+        return hashlib.sha1(prepared_link.encode('utf-8')).hexdigest()[:8]
 
     @property
     def num_unread_notifications(self) -> int:
@@ -170,7 +171,7 @@ class PhpBB3SessionInterface(flask.sessions.SessionInterface):
             # Try to fetch session
             user = phpbb3.get_session(session_id=session_id)
             if user and 'username' in user:
-                user['username'] = user['username'].decode('utf-8', 'ignore')
+                user['username'] = user['username']
         if not user:
             # Use anonymous user
             user = phpbb3.get_user(

@@ -96,8 +96,8 @@ class TestSessionUser(TestSession):
         self.assertEqual(self.session.get_link_hash(some_link), '')
 
         self.session['user_id'] = '3'
-        salted_link = self.session['user_form_salt'] + some_link
-        expected_value = hashlib.sha1(salted_link).hexdigest()[:8]
+        salted_link: str = self.session['user_form_salt'] + some_link
+        expected_value = hashlib.sha1(salted_link.encode('utf-8')).hexdigest()[:8]
         self.assertEqual(self.session.get_link_hash(some_link), expected_value)
 
 

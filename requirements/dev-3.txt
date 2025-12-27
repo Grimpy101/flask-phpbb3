@@ -1,2 +1,2 @@
 -r dev.txt
-mypy==0.660
+mypy>=1.19.1

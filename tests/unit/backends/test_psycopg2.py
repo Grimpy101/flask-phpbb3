@@ -117,9 +117,9 @@ class TestPreparedCustomFieldsStatements(unittest.TestCase):
             }
         )
 
-        self.assertListEqual(
-            connection._functions.keys(),
-            [
+        self.assertSetEqual(
+            set(connection._functions.keys()),
+            set([
                 'has_membership_resolve',
                 'get_autologin',
                 'get_session',
@@ -128,7 +128,7 @@ class TestPreparedCustomFieldsStatements(unittest.TestCase):
                 'get_unread_notifications_count',
                 'get_user',
                 'get_user_profile',
-            ]
+            ])
         )
 
     def test_valid(self, mocked_db):
@@ -168,9 +168,9 @@ class TestPreparedCustomStatements(unittest.TestCase):
             }
         )
 
-        self.assertListEqual(
-            connection._functions.keys(),
-            [
+        self.assertSetEqual(
+            set(connection._functions.keys()),
+            set([
                 'has_membership_resolve',
                 'get_autologin',
                 'get_session',
@@ -179,7 +179,7 @@ class TestPreparedCustomStatements(unittest.TestCase):
                 'get_unread_notifications_count',
                 'get_user',
                 'get_user_profile',
-            ]
+            ])
         )
 
     def test_addition(self, mocked_db):
@@ -193,9 +193,9 @@ class TestPreparedCustomStatements(unittest.TestCase):
             }
         )
 
-        self.assertListEqual(
-            connection._functions.keys(),
-            [
+        self.assertSetEqual(
+            set(connection._functions.keys()),
+            set([
                 'has_membership_resolve',
                 'get_autologin',
                 'get_session',
@@ -205,7 +205,7 @@ class TestPreparedCustomStatements(unittest.TestCase):
                 'some_custom_statement',
                 'get_user',
                 'get_user_profile',
-            ]
+            ])
         )
         self.assertEqual(
             connection._functions['some_custom_statement'],
@@ -223,9 +223,9 @@ class TestPreparedCustomStatements(unittest.TestCase):
             }
         )
 
-        self.assertListEqual(
-            connection._functions.keys(),
-            [
+        self.assertSetEqual(
+            set(connection._functions.keys()),
+            set([
                 'has_membership_resolve',
                 'get_autologin',
                 'get_session',
@@ -234,7 +234,7 @@ class TestPreparedCustomStatements(unittest.TestCase):
                 'get_unread_notifications_count',
                 'get_user',
                 'get_user_profile',
-            ]
+            ])
         )
         self.assertEqual(
             connection._functions['get_autologin'],

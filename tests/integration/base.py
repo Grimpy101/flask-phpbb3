@@ -15,7 +15,7 @@ DB_USER = 'phpbb3_test'
 DB_NAME = 'phpbb3_test'
 
 
-def setUpModule():
+def setUpModule() -> None:
     # type: () -> None
     _create_db()
     connection = _get_connection(DB_HOST, DB_USER, DB_NAME)
@@ -44,6 +44,7 @@ class TestWithDatabase(unittest.TestCase):
                 'PASSWORD': '',
                 'TABLE_PREFIX': 'phpbb_',
             },
+            'SERVER_NAME': '127.0.0.1'
         })
         self.phpbb3 = flask_phpbb3.PhpBB3(self.app)
 
@@ -164,7 +165,8 @@ def _create_db():
 
 def _init_schema(connection):
     # type: (psycopg2.extensions.connection) -> None
-    schema_sql = open('./tests/fixtures/postgres/schema.sql', 'r').read()
+    with open('./tests/fixtures/postgres/schema.sql', 'r') as f:
+        schema_sql = f.read()
     cursor_schema = connection.cursor()  # type: psycopg2.extensions.cursor
     cursor_schema.execute(schema_sql)
     cursor_schema.close()

@@ -76,14 +76,14 @@ class TestSession(base.TestWithDatabase):
 
     def test_anonymous(self):
         # type: () -> None
-        data = self.client.get('/').data
+        data = self.client.get('/').get_data().decode('utf-8')
         self.assertEqual(data, '1,Anonymous')
 
     def test_invalid_session(self):
         # type: () -> None
         base._create_user(self.cursor)
 
-        data = self.client.get('/?sid=123').data
+        data = self.client.get('/?sid=123').get_data().decode('utf-8')
         self.assertEqual(data, '1,Anonymous')
 
     def test_user_by_args(self):
@@ -91,7 +91,9 @@ class TestSession(base.TestWithDatabase):
         base._create_user(self.cursor)
         base._create_session(self.cursor, self.session_id, 2)
 
-        data = self.client.get('/?sid=' + self.session_id).data
+        data = self.client.get('/?sid=' + self.session_id)\
+            .get_data()\
+            .decode('utf-8')
         self.assertEqual(data, '2,test')
 
     def test_user_by_cookie(self):
@@ -99,33 +101,33 @@ class TestSession(base.TestWithDatabase):
         base._create_user(self.cursor)
         base._create_session(self.cursor, self.session_id, 2)
 
-        self.client.set_cookie('127.0.0.1', 'phpbb3_sid', self.session_id)
-        data = self.client.get('/').data
+        self.client.set_cookie('phpbb3_sid', self.session_id, domain='127.0.0.1')
+        data = self.client.get('/').get_data().decode('utf-8')
         self.assertEqual(data, '2,test')
-        self.client.delete_cookie('127.0.0.1', 'phpbb3_sid')
+        self.client.delete_cookie('phpbb3_sid', domain='127.0.0.1')
 
     def test_storage(self):
         # type: () -> None
         base._create_user(self.cursor)
         base._create_session(self.cursor, self.session_id, 2)
 
-        self.client.set_cookie('127.0.0.1', 'phpbb3_sid', self.session_id)
-        data = self.client.get('/data').data
+        self.client.set_cookie('phpbb3_sid', self.session_id, domain='127.0.0.1')
+        data = self.client.get('/data').get_data().decode('utf-8')
         self.assertEqual(data, '')
 
         self.client.get('/data/something')
 
-        data = self.client.get('/data').data
+        data = self.client.get('/data').get_data().decode('utf-8')
         self.assertEqual(data, 'something')
 
     def test_storage_invalid_id(self):
         # type: () -> None
-        data = self.client.get('/data').data
+        data = self.client.get('/data').get_data().decode('utf-8')
         self.assertEqual(data, '')
 
         self.client.get('/data/something')
 
-        data = self.client.get('/data').data
+        data = self.client.get('/data').get_data().decode('utf-8')
         self.assertEqual(data, '')
 
     def test_privilege(self):
@@ -135,11 +137,11 @@ class TestSession(base.TestWithDatabase):
         base._create_privilege(self.cursor, 1, 'm_edit')
         base._grant_privilege(self.cursor, 2)
 
-        data = self.client.get('/priv_test').data
+        data = self.client.get('/priv_test').get_data().decode('utf-8')
         self.assertEqual(data, 'False,False,False')
 
         # We do a login via phpbb3 :P
-        self.client.set_cookie('127.0.0.1', 'phpbb3_sid', self.session_id)
+        self.client.set_cookie('phpbb3_sid', self.session_id, domain='127.0.0.1')
 
-        data = self.client.get('/priv_test').data
+        data = self.client.get('/priv_test').get_data().decode('utf-8')
         self.assertEqual(data, 'True,False,True')
