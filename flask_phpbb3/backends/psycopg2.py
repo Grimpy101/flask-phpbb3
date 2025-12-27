@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 try:
     import psycopg2
@@ -128,7 +128,7 @@ class Psycopg2Backend(base.BaseBackend):
         cache_ttl: Optional[int] = None,
         skip: int = 0,
         limit: Optional[int] = 10,
-        **kwargs: int | str
+        **kwargs: Union[int, str]
     ) -> Any:
         """Executes a query with values in kwargs."""
         if operation not in self.KNOWN_OPERATIONS:
@@ -180,7 +180,7 @@ class Psycopg2Backend(base.BaseBackend):
         self,
         operation: str,
         query: str,
-        params: Dict[str, str | int]
+        params: Dict[str, Union[str, int]]
     ) -> Any:
         cursor = self._db.cursor()
 
@@ -214,7 +214,7 @@ class Psycopg2Backend(base.BaseBackend):
         cache_ttl: Optional[int] = None,
         skip: int = 0,
         limit: Optional[int] = 10,
-        **kwargs: int | str
+        **kwargs: Union[int, str]
     ) -> Any:
         cache_key_prefix: Optional[str] = None
         if cache:

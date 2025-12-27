@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import json
-from typing import Any, Dict, Optional, Set
+from typing import Any, Dict, Optional, Set, Union
 
 import cachelib
 
@@ -30,7 +32,7 @@ class PhpBB3Session(Dict[str, Any], flask.sessions.SessionMixin):
         # request should not be executed multiple times
         self._request_cache: Dict[str, Any] = {}
 
-    def __setitem__(self, key: str, value: str | int) -> None:
+    def __setitem__(self, key: str, value: Union[str, int]) -> None:
         modified: bool = self.get(key) != value
         super(PhpBB3Session, self).__setitem__(key, value)
         if key not in self._read_only_properties:
@@ -60,7 +62,7 @@ class PhpBB3Session(Dict[str, Any], flask.sessions.SessionMixin):
         user_id = int(self.get('user_id', 1))
         return user_id > 1
 
-    def is_member(self, group: int | str) -> bool:
+    def is_member(self, group: Union[int, str]) -> bool:
         """Tests if user is a member of specified group."""
         if isinstance(group, int):
             # Try with default group
