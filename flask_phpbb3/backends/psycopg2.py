@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, List, Optional, Union
+import typing
 
 try:
     import psycopg2
@@ -106,7 +106,8 @@ class Psycopg2Backend(base.BaseBackend):
         Prepares statements for custom fields
         """
         # Setters for custom fields
-        custom_fields: List[Any] = self._config.get('CUSTOM_USER_FIELDS', [])
+        custom_fields: typing.List[typing.Any] =\
+            self._config.get('CUSTOM_USER_FIELDS', [])
         for custom_field in custom_fields:
             self._functions["set_{0}".format(custom_field)] = (
                 "UPDATE"
@@ -124,12 +125,12 @@ class Psycopg2Backend(base.BaseBackend):
         self,
         operation: str,
         query: str,
-        cache_key_prefix: Optional[str] = None,
-        cache_ttl: Optional[int] = None,
+        cache_key_prefix: typing.Optional[str] = None,
+        cache_ttl: typing.Optional[int] = None,
         skip: int = 0,
-        limit: Optional[int] = 10,
-        **kwargs: Union[int, str]
-    ) -> Any:
+        limit: typing.Optional[int] = 10,
+        **kwargs: typing.Union[int, str]
+    ) -> typing.Any:
         """Executes a query with values in kwargs."""
         if operation not in self.KNOWN_OPERATIONS:
             raise ValueError("Unknown operation")
@@ -169,7 +170,7 @@ class Psycopg2Backend(base.BaseBackend):
         self,
         query: str,
         skip: int,
-        limit: Optional[int]
+        limit: typing.Optional[int]
     ) -> str:
         output = query + ' OFFSET {:d}'.format(skip)
         if limit:
@@ -180,8 +181,8 @@ class Psycopg2Backend(base.BaseBackend):
         self,
         operation: str,
         query: str,
-        params: Dict[str, Union[str, int]]
-    ) -> Any:
+        params: typing.Dict[str, typing.Union[str, int]]
+    ) -> typing.Any:
         cursor = self._db.cursor()
 
         cursor.execute(
@@ -211,12 +212,12 @@ class Psycopg2Backend(base.BaseBackend):
         self,
         command: str,
         cache: bool = False,
-        cache_ttl: Optional[int] = None,
+        cache_ttl: typing.Optional[int] = None,
         skip: int = 0,
-        limit: Optional[int] = 10,
-        **kwargs: Union[int, str]
-    ) -> Any:
-        cache_key_prefix: Optional[str] = None
+        limit: typing.Optional[int] = 10,
+        **kwargs: typing.Union[int, str]
+    ) -> typing.Any:
+        cache_key_prefix: typing.Optional[str] = None
         if cache:
             cache_key_prefix = command
 

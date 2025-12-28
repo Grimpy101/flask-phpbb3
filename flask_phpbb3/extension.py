@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+import typing
 
 import cachelib
 
@@ -11,8 +11,8 @@ import flask_phpbb3.sessions
 class PhpBB3:
     def __init__(
         self,
-        app: Optional[flask.Flask] = None,
-        cache: Optional[cachelib.BaseCache] = None,
+        app: typing.Optional[flask.Flask] = None,
+        cache: typing.Optional[cachelib.BaseCache] = None,
     ) -> None:
         self.app = app
         if app is not None:
@@ -21,7 +21,7 @@ class PhpBB3:
     def init_app(
         self,
         app: flask.Flask,
-        cache: Optional[cachelib.BaseCache] = None
+        cache: typing.Optional[cachelib.BaseCache] = None
     ) -> None:
         self._ensure_default_config(app)
 
@@ -85,7 +85,7 @@ class PhpBB3:
     def _create_backend(
         cls,
         backend_type: str,
-        config: Dict[str, Any],
+        config: typing.Dict[str, typing.Any],
         cache: cachelib.BaseCache
     ) -> flask_phpbb3.backends.base.BaseBackend:
         if backend_type == 'psycopg2':
@@ -102,7 +102,7 @@ class PhpBB3:
         """Returns phpbb3 backend"""
         current_app = self.app or flask.current_app
 
-        backend: Optional[flask_phpbb3.backends.base.BaseBackend] =\
+        backend: typing.Optional[flask_phpbb3.backends.base.BaseBackend] =\
             flask.g.get('phpbb3_backend', None)
 
         if backend is None or backend.is_closed:
@@ -124,9 +124,9 @@ class PhpBB3:
         self,
         key: str,
         cache: bool = False,
-        cache_ttl: Optional[int] = None
-    ) -> Optional[Dict]:
-        output: Optional[Dict] = self._backend.execute(
+        cache_ttl: typing.Optional[int] = None
+    ) -> typing.Optional[typing.Dict]:
+        output: typing.Optional[typing.Dict] = self._backend.execute(
             'get_autologin',
             key=key,
             cache=cache,
@@ -138,9 +138,9 @@ class PhpBB3:
         self,
         session_id: str,
         cache: bool = False,
-        cache_ttl: Optional[int] = None
-    ) -> Optional[Dict]:
-        output: Optional[Dict] = self._backend.execute(
+        cache_ttl: typing.Optional[int] = None
+    ) -> typing.Optional[typing.Dict]:
+        output: typing.Optional[typing.Dict] = self._backend.execute(
             'get_session',
             session_id=session_id,
             cache=cache,
@@ -152,9 +152,9 @@ class PhpBB3:
         self,
         user_id: int,
         cache: bool = False,
-        cache_ttl: Optional[int] = None
-    ) -> Optional[Dict]:
-        output: Optional[Dict] = self._backend.execute(
+        cache_ttl: typing.Optional[int] = None
+    ) -> typing.Optional[typing.Dict]:
+        output: typing.Optional[typing.Dict] = self._backend.execute(
             'get_user',
             user_id=user_id,
             cache=cache,
@@ -166,9 +166,9 @@ class PhpBB3:
         self,
         user_id: int,
         cache: bool = False,
-        cache_ttl: Optional[int] = None
-    ) -> Optional[Dict]:
-        output: Optional[Dict] = self._backend.execute(
+        cache_ttl: typing.Optional[int] = None
+    ) -> typing.Optional[typing.Dict]:
+        output: typing.Optional[typing.Dict] = self._backend.execute(
             'get_user_profile',
             user_id=user_id,
             cache=cache,
@@ -181,9 +181,9 @@ class PhpBB3:
         user_id: int,
         group_id: int,
         cache: bool = False,
-        cache_ttl: Optional[int] = None,
-    ) -> Optional[bool]:
-        output: Optional[bool] = self._backend.execute(
+        cache_ttl: typing.Optional[int] = None,
+    ) -> typing.Optional[bool]:
+        output: typing.Optional[bool] = self._backend.execute(
             'has_membership',
             user_id=user_id,
             group_id=group_id,
@@ -197,9 +197,9 @@ class PhpBB3:
         user_id: int,
         group_name: str,
         cache: bool = False,
-        cache_ttl: Optional[int] = None,
-    ) -> Optional[bool]:
-        output: Optional[bool] = self._backend.execute(
+        cache_ttl: typing.Optional[int] = None,
+    ) -> typing.Optional[bool]:
+        output: typing.Optional[bool] = self._backend.execute(
             'has_membership_resolve',
             user_id=user_id,
             group_name=group_name,
@@ -211,26 +211,27 @@ class PhpBB3:
     def fetch_acl_options(
         self,
         skip: int = 0,
-        limit: Optional[int] = 10,
+        limit: typing.Optional[int] = 10,
         cache: bool = False,
-        cache_ttl: Optional[int] = None,
-    ) -> Optional[List[Dict]]:
-        output: Optional[List[Dict]] = self._backend.execute(
-            'fetch_acl_options',
-            skip=skip,
-            limit=limit,
-            cache=cache,
-            cache_ttl=cache_ttl,
-        )
+        cache_ttl: typing.Optional[int] = None,
+    ) -> typing.Optional[typing.List[typing.Dict]]:
+        output: typing.Optional[typing.List[typing.Dict]] =\
+            self._backend.execute(
+                'fetch_acl_options',
+                skip=skip,
+                limit=limit,
+                cache=cache,
+                cache_ttl=cache_ttl,
+            )
         return output
 
     def get_unread_notifications_count(
         self,
         user_id: int,
         cache: bool = False,
-        cache_ttl: Optional[int] = None,
-    ) -> Optional[Dict]:
-        output: Optional[Dict] = self._backend.execute(
+        cache_ttl: typing.Optional[int] = None,
+    ) -> typing.Optional[typing.Dict]:
+        output: typing.Optional[typing.Dict] = self._backend.execute(
             'get_unread_notifications_count',
             user_id=user_id,
             cache=cache,
@@ -248,9 +249,9 @@ class PhpBB3:
         self,
         command: str,
         cache: bool = False,
-        cache_ttl: Optional[int] = None,
-        **kwargs: Any
-    ) -> Any:
+        cache_ttl: typing.Optional[int] = None,
+        **kwargs: typing.Any
+    ) -> typing.Any:
         output = self._backend.execute(
             command,
             cache=cache,
@@ -259,7 +260,7 @@ class PhpBB3:
         )
         return output
 
-    def teardown(self, exception: Any) -> None:
+    def teardown(self, exception: typing.Any) -> None:
         backend: flask_phpbb3.backends.base.BaseBackend =\
             flask.g.get('phpbb3_backend', None)
         if backend is not None:

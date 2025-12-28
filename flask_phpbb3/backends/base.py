@@ -1,5 +1,5 @@
 import abc
-from typing import Any, Dict, List, Optional, Union
+import typing
 
 import cachelib
 
@@ -8,18 +8,22 @@ ACL_OPTIONS_CACHE_TTL: int = 3600 * 1
 
 
 class UserAcl:
-    def __init__(self, raw_acl_options: List[Dict], raw_user_permissions: str):
+    def __init__(
+        self,
+        raw_acl_options: typing.List[typing.Dict],
+        raw_user_permissions: str
+    ):
         self._acl_options = self._parse_acl_options(raw_acl_options)
         self._acl = self._parse_user_permissions(raw_user_permissions)
-        self._acl_lookup_cache: Dict[str, Any] = {}
+        self._acl_lookup_cache: typing.Dict[str, typing.Any] = {}
 
     @classmethod
     def _parse_acl_options(
         cls,
-        raw_acl_options: List[Dict[str, Any]]
-    ) -> Dict[str, Dict[str, int]]:
+        raw_acl_options: typing.List[typing.Dict[str, typing.Any]]
+    ) -> typing.Dict[str, typing.Dict[str, int]]:
         # Load ACL options, so we can decode the user ACL
-        acl_options: Dict[str, Dict[str, int]] = {
+        acl_options: typing.Dict[str, typing.Dict[str, int]] = {
             'local': {},
             'global': {}
         }
@@ -44,9 +48,9 @@ class UserAcl:
     def _parse_user_permissions(
         cls,
         raw_user_permissions: str
-    ) -> Dict[str, str]:
-        seq_cache: Dict[str, str] = {}
-        acl: Dict[str, str] = {}
+    ) -> typing.Dict[str, str]:
+        seq_cache: typing.Dict[str, str] = {}
+        acl: typing.Dict[str, str] = {}
 
         split_user_permissions = raw_user_permissions\
             .rstrip()\
@@ -133,9 +137,9 @@ class BaseBackend:
     def __init__(
         self,
         cache: cachelib.BaseCache,
-        config: Dict[str, Any]
+        config: typing.Dict[str, typing.Any]
     ):
-        self._functions: Dict[str, str] = {}
+        self._functions: typing.Dict[str, str] = {}
         self._connection = None
         self._cache = cache
         self._config = config
@@ -156,7 +160,7 @@ class BaseBackend:
 
     @property
     @abc.abstractmethod
-    def _db(self) -> Any:
+    def _db(self) -> typing.Any:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -164,11 +168,11 @@ class BaseBackend:
         self,
         command: str,
         cache: bool = False,
-        cache_ttl: Optional[int] = None,
+        cache_ttl: typing.Optional[int] = None,
         skip: int = 0,
-        limit: Optional[int] = 10,
-        **kwargs: Union[int, str]
-    ) -> Any:
+        limit: typing.Optional[int] = 10,
+        **kwargs: typing.Union[int, str]
+    ) -> typing.Any:
         raise NotImplementedError
 
     @abc.abstractmethod

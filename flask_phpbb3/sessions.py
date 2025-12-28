@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, Optional, Set, Union
+import typing
 
 import cachelib
 
@@ -17,22 +17,22 @@ ANONYMOUS_CACHE_TTL: int = 3600 * 24
 
 
 # TODO: Inheriting Dict causes a type-checker error, possibly restructure
-class PhpBB3Session(Dict[str, Any], flask.sessions.SessionMixin):
+class PhpBB3Session(typing.Dict[str, typing.Any], flask.sessions.SessionMixin):
     def __init__(self) -> None:
         # Some session related variables
         self.modified: bool = False
         self.new: bool = False
-        self._read_only_properties: Set[str] = set([])
+        self._read_only_properties: typing.Set[str] = set([])
 
         # Some ACL related things
-        self._acl: Optional[flask_phpbb3.backends.base.UserAcl] = None
+        self._acl: typing.Optional[flask_phpbb3.backends.base.UserAcl] = None
 
         # Per request cache
         # This should not be cached into session, but per
         # request should not be executed multiple times
-        self._request_cache: Dict[str, Any] = {}
+        self._request_cache: typing.Dict[str, typing.Any] = {}
 
-    def __setitem__(self, key: str, value: Union[str, int]) -> None:
+    def __setitem__(self, key: str, value: typing.Union[str, int]) -> None:
         modified: bool = self.get(key) != value
         super(PhpBB3Session, self).__setitem__(key, value)
         if key not in self._read_only_properties:
@@ -47,7 +47,7 @@ class PhpBB3Session(Dict[str, Any], flask.sessions.SessionMixin):
         output: flask_phpbb3.PhpBB3 = getattr(flask.current_app, 'phpbb3')
         return output
 
-    def pop(self, *args: Any, **kwargs: Any) -> Any:
+    def pop(self, *args: typing.Any, **kwargs: typing.Any) -> typing.Any:
         """Wrapper to set modified."""
         self.modified = True
         return super(PhpBB3Session, self).pop(*args, **kwargs)
@@ -62,7 +62,7 @@ class PhpBB3Session(Dict[str, Any], flask.sessions.SessionMixin):
         user_id = int(self.get('user_id', 1))
         return user_id > 1
 
-    def is_member(self, group: Union[int, str]) -> bool:
+    def is_member(self, group: typing.Union[int, str]) -> bool:
         """Tests if user is a member of specified group."""
         if isinstance(group, int):
             # Try with default group
@@ -161,12 +161,12 @@ class PhpBB3SessionInterface(flask.sessions.SessionInterface):
             raise ValueError('App not properly configured, phpbb3 is missing!')
         phpbb3: flask_phpbb3.PhpBB3 = getattr(app, 'phpbb3')
 
-        session_id: Optional[str] = request.args.get('sid', type=str)\
+        session_id: typing.Optional[str] = request.args.get('sid', type=str)\
             or request.cookies.get(cookie_name + 'sid', None)
         if not session_id:
             session_id = None
 
-        user: Optional[Dict] = None
+        user: typing.Optional[typing.Dict] = None
         if self._is_bot(app, request):
             user = {'user_id': 1, 'username': 'Anonymous'}
         elif session_id:
