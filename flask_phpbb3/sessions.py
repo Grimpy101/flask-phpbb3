@@ -17,7 +17,7 @@ ANONYMOUS_CACHE_TTL: int = 3600 * 24
 
 
 # TODO: Inheriting Dict causes a type-checker error, possibly restructure
-class PhpBB3Session(typing.Dict[str, typing.Any], flask.sessions.SessionMixin):
+class PhpBB3Session(dict, flask.sessions.SessionMixin):
     def __init__(self) -> None:
         # Some session related variables
         self.modified: bool = False

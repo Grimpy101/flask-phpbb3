@@ -106,7 +106,7 @@ class Psycopg2Backend(base.BaseBackend):
         Prepares statements for custom fields
         """
         # Setters for custom fields
-        custom_fields: typing.List[typing.Any] =\
+        custom_fields: typing.List[str] =\
             self._config.get('CUSTOM_USER_FIELDS', [])
         for custom_field in custom_fields:
             self._functions["set_{0}".format(custom_field)] = (
