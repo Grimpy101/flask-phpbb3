@@ -6,7 +6,7 @@ authors = [
 ]
 description = "Connector for Flask with phpBB3 board"
 readme = "README.rst"
-requires-python = ">=3.14"
+requires-python = ">=3.8"
 classifiers = [
     "Environment :: Web Environment",
     "Intended Audience :: Developers",
@@ -14,13 +14,20 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.14",
+    "License :: OSI Approved :: BSD License",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     "Topic :: Software Development :: Libraries :: Python Modules"
 ]
-license = "BSD-3-Clause"
-license-files = ["LICENSE"]
+dependencies = [
+    "psycopg2>=2.8.4",
+    "Flask>=2.3.0",
+    "cachelib>=0.11.0",
+    "setuptools"
+]
 
 [project.urls]
 Homepage = "https://github.com/MasterMind2k/flask-phpbb3"
 Issues = "https://github.com/Podnapisi-NET/flask-phpbb3/issues"
 
+[dependency-groups]
+dev = ["black", "ruff", "mypy", "coverage"]

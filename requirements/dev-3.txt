@@ -1,2 +1,0 @@
--r dev.txt
-mypy>=1.19.1
